@@ -28,7 +28,6 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "widget/WidgetManager.h"
 
-//0x438640
 CursorObject::CursorObject()
 {
     mType = SeedType::SEED_NONE;
@@ -42,22 +41,10 @@ CursorObject::CursorObject()
     mCobCannonPlantID = PlantID::PLANTID_NULL;
     mGlovePlantID = PlantID::PLANTID_NULL;
     mReanimCursorID = ReanimationID::REANIMATIONID_NULL;
-    
-    if (mApp->IsWhackAZombieLevel())
-    {
-        ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_HAMMER, true);
-        Reanimation* aHammerReanim = mApp->AddReanimation(-25.0f, 16.0f, 0, ReanimationType::REANIM_HAMMER);
-        aHammerReanim->mIsAttachment = true;
-        aHammerReanim->PlayReanim("anim_whack_zombie", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
-        aHammerReanim->mAnimTime = 1.0f;
-        mReanimCursorID = mApp->ReanimationGetID(aHammerReanim);
-    }
-
     mWidth = 80;
     mHeight = 80;
 }
 
-//0x438780
 void CursorObject::Update()
 {
     if (mApp->mGameScene != GameScenes::SCENE_PLAYING && !mBoard->mCutScene->IsInShovelTutorial())
@@ -86,9 +73,9 @@ void CursorObject::Update()
 void CursorObject::Die()
 {
     mApp->RemoveReanimation(mReanimCursorID);
+    mReanimCursorID = ReanimationID::REANIMATIONID_NULL;
 }
 
-//0x438820
 void CursorObject::Draw(Graphics* g)
 {
     switch (mCursorType)
@@ -236,7 +223,6 @@ void CursorObject::Draw(Graphics* g)
     }
 }
 
-//0x438D50
 CursorPreview::CursorPreview()
 {
     mX = 0;
@@ -248,7 +234,6 @@ CursorPreview::CursorPreview()
     mHeight = 80;
 }
 
-//0x438DA0
 void CursorPreview::Update()
 {
     if (mApp->mGameScene != GameScenes::SCENE_PLAYING && !mBoard->mCutScene->IsInShovelTutorial())
@@ -289,7 +274,6 @@ void CursorPreview::Update()
     mVisible = false;
 }
 
-//0x438EB0
 void CursorPreview::Draw(Graphics* g)
 {
     SeedType aSeedType = mBoard->GetSeedTypeInCursor();

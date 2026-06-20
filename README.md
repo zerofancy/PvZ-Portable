@@ -17,7 +17,7 @@ A **cross-platform** community-driven reimplementation of Plants vs. Zombies: Ga
 **⚠️ Notice:**
 
 * This repository does **NOT** contain any copyrighted game assets (such as images, music, or fonts) owned by PopCap Games or Electronic Arts. Users must provide their own `main.pak` and `properties/` folder from a **legally purchased copy** of Plants vs. Zombies: GOTY Edition.
-* The codebase is a manual reimplementation derived from publicly available reverse-engineering documentation and community research (such as [植物大战僵尸吧](https://tieba.baidu.com/f?ie=utf-8&kw=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8), [PVZ Wiki](https://wiki.pvz1.com/doku.php?id=home) and [PvZ Tools](https://pvz.tools/memory/)). It is written to utilize portable backends like SDL2 and OpenGL ES 2.0 (with desktop OpenGL 2.1 fallback).
+* The codebase is a manual reimplementation derived from community research (such as [植物大战僵尸吧](https://tieba.baidu.com/f?ie=utf-8&kw=%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8), [PVZ Wiki](https://wiki.pvz1.com/doku.php?id=home) and [PvZ Tools](https://pvz.tools/memory/)). It is written to utilize portable backends like SDL2 and OpenGL ES 2.0 (with desktop OpenGL 2.1 fallback). The author (wszqkzqk) **NEVER reverse engineered** the program; the author wrote it solely based on publicly available information and game testing. Also, code generated directly through reverse engineering will **not be accepted**.
 * This project is intended solely for **educational purposes**, focusing on **cross-platform porting techniques**, engine modernization, and learning how classic game logic can be adapted to various hardware architectures (e.g., Nintendo Switch, 3DS).
 * Non-Commercial: This project is not affiliated with, authorized, or endorsed by PopCap Games or Electronic Arts.
 * Project icons and platform-specific logos are created by me (wszqkzqk) with the help of AI image generation tools and are not official assets of PopCap/EA.
@@ -25,22 +25,19 @@ A **cross-platform** community-driven reimplementation of Plants vs. Zombies: Ga
 
 ## Features
 
-This project is **based on** [Patoke](https://github.com/Patoke/re-plants-vs-zombies) and [Headshotnoby](https://github.com/headshot2017/re-plants-vs-zombies)'s PvZ GOTY implementation with the following objectives:
-- [x] Replace renderer with SDL + OpenGL ES 2.0 (desktop OpenGL 2.1 fallback)
+- [x] Render with SDL + OpenGL ES 2.0 (desktop OpenGL 2.1 fallback)
   - Also enable to **resize the window**, which was not possible in the original game
   - **Why OpenGL ES 2.0?** GLES 2.0 is the common subset of virtually all modern GPU APIs — every desktop OpenGL 2.1+ driver, mobile GPU, and game console inherently supports it. This means the game works **out of the box** everywhere without extra dependencies. [ANGLE](https://chromium.googlesource.com/angle/angle) can also be optionally used to translate calls to DirectX/Metal/Vulkan if needed.
-- [x] Replace Windows code with cross-platform code
-- [x] Replace DirectSound/BASS/FMod with [SDL Mixer X](https://github.com/WohlSoft/SDL-Mixer-X)
+- [x] Implement a cross-platform audio system based on [SDL Mixer X](https://github.com/WohlSoft/SDL-Mixer-X)
   - This project uses a fork of SDL Mixer X that adds compatibility with the MO3 format by using libopenmpt. This fork is located under SexyAppFramework/sound/SDL-Mixer-X
-- [x] main.pak support
-- [x] Optimize memory usage for console ports (Partial)
+- [x] Save more memory by disabling caching for console platforms that have very limited RAM
 - [x] **Compatible** with original PvZ GOTY Edition's ***global user data*** (profile info, adventure progress, coins, Zen Garden, etc., stored in `user*.dat`)
   - [x] Fix 2038 year problem while keeping compatibility
 - [x] **Portable mid-level save game** format `.v4` support (share **mid-level saves** between Windows, Linux, macOS, Android, Switch, etc.)
   - [x] Support export/import of `.v4` save files to/from human-readable YAML format for easy editing
 - [x] Implement with `std::thread` for cross-platform threading support
 - [x] Implement with `std::filesystem` for cross-platform file system support
-- [x] Replace wide-string with `std::string` and UTF-8 encoding
+- [x] Unified use of UTF-8 encoding within the program
 - [x] **Multilingual Support**: Supports game resource data from official GOTY editions in various languages, including **Chinese, German, Spanish, French, and Italian**.
 - [x] 32 and 64-bit builds support
 - [x] Different CPU architectures support (i686, x86_64, aarch64, riscv64, loongarch64, etc.)
@@ -48,6 +45,8 @@ This project is **based on** [Patoke](https://github.com/Patoke/re-plants-vs-zom
 - [x] Different endianness support (little-endian and big-endian)
   - [x] Save data compatibility across endianness
   - Theoretically supports big-endian platforms, but untested due to lack of hardware
+- [x] Unlockable **Hidden Limbo Page** with additional levels in the original game
+  - To unlock it, open the Mini-Games / Puzzle / Survival selection screen and tap any blank area **5 times in rapid succession**
 
 This project supports the following platforms (including but not limited to):
 
@@ -60,9 +59,9 @@ This project supports the following platforms (including but not limited to):
 | Haiku           | Executable dir (resources); per-user app-data for writable files | Partially works: no music                                                              |
 | Android         | `Android/data/io.github.wszqkzqk.pvzportable/files/` | Works                                                                                  |
 | iOS / iPadOS    | App Documents directory (Files app) | Works (sideload only; unsigned IPA)                                                    |
-| Nintendo Switch | sdmc:/switch/PvZPortable | Works on real hardware. Kenji-NX crashes on boot.                           |
-| Nintendo 3DS    | sdmc:/3ds/PvZPortable    | In development, might not have enough memory for Old 3DS, might barely work on New 3DS |
 | Web (WASM)      | Browser IndexedDB (saves); resources uploaded at runtime    | Works (requires a HTTP server) |
+| Nintendo Switch | sdmc:/switch/PvZPortable | Works on real hardware. Kenji-NX crashes on boot.                           |
+| Nintendo 3DS    | sdmc:/3ds/PvZPortable    | Might not have enough memory for Old 3DS and barely work on New 3DS (discontionued) |
 
 To play the game, you need the game data from PvZ GOTY. Place `main.pak` and the `properties/` folder next to the `pvz-portable` executable (the game will search for resources relative to the executable's directory). You can also use extracted data instead of `main.pak` if you prefer.
 
@@ -112,7 +111,7 @@ Long-press the app icon on your launcher to access the **Manage Data** shortcut,
 
 ### Special Instructions for iOS / iPadOS
 
-Download the unsigned IPA from the [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases) page or build it yourself with `ios/build-ios.sh`. The IPA must be sideloaded — common methods include [AltStore](https://altstore.io/), [TrollStore](https://github.com/opa334/TrollStore) (iOS 14.0–16.6.1), or deploying directly from Xcode with a free Apple ID.
+Download the unsigned IPA from the [Releases](https://github.com/wszqkzqk/PvZ-Portable/releases) page or build it yourself with `ios/build-ios.sh`. The IPA must be sideloaded — common methods include [AltStore](https://altstore.io/), [TrollStore](https://github.com/opa334/TrollStore), or deploying directly from Xcode with a free Apple ID.
 
 #### Importing Game Resources
 
@@ -132,7 +131,7 @@ You can also [download the WASM build](https://github.com/wszqkzqk/PvZ-Portable/
 
 ## Game Version Compatibility
 
-This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.2.0.1073** EN (the standalone PopCap release). **Non-English GOTY editions** (1.2.0.1093 DE/ES/FR/IT) and the **Steam GOTY Edition 1.2.0.1096** are also fully playable — all game mechanics work correctly. The only differences are minor cosmetic UI text issues caused by renamed string keys across versions, and these can be **easily fixed** by the user via a custom `properties/default.xml` (see below). 1.1.0.1056 ZH may have freezing issues in some cases (see below).
+This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.2.0.1073** EN (the standalone PopCap release). **Non-English GOTY editions** (1.2.0.1093 DE/ES/FR/IT or 1.1.0.1056 ZH based on 1.2.0.1073) and the **Steam GOTY Edition 1.2.0.1096** are also fully playable — all game mechanics work correctly. The only differences are minor cosmetic UI text issues caused by renamed string keys across versions, and these can be **easily fixed** by the user via a custom `properties/default.xml` (see below).
 
 **Recommendation:** use the **1.2.0.1073 EN** asset package for the best **out-of-box** experience.
 
@@ -147,8 +146,6 @@ This project is designed and tested against Plants vs. Zombies **GOTY Edition 1.
 | **Crazy Dave's plant sell price shows 1/10 of the correct value** | In 1.2.0.1073, the string template `[CRAZY_DAVE_1700]` contains a trailing `0` after `{SELL_PRICE}` (i.e. `${SELL_PRICE}0`) because the engine passes the price divided by 10. In 1.2.0.1096 the trailing `0` was removed, so the displayed price becomes 1/10 of the intended amount. |
 
 All of the above can be resolved by adding the missing or corrected string entries to a `properties/default.xml` file placed alongside the game data.
-
-In addition, 1.1.0.1056 ZH is reported to cause freezing on some platforms due to resource incompatibility when showing "A large wave of zombies" banner.
 </details>
 
 ### Multilingual Support
@@ -232,7 +229,6 @@ You can customize the game features by adding options to the first `cmake` comma
 | Option | Default | Description |
 | :--- | :--- | :--- |
 | `PVZ_DEBUG` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Enable **cheat keys**, debug displays and other debug features. |
-| `LIMBO_PAGE` | `ON` | Enable access to the limbo page which contains hidden levels. |
 | `DO_FIX_BUGS` | `OFF` | Apply community fixes for "bugs" of official 1.2.0.1073 GOTY Edition.[^1] However, these "bugs" are usually **considered "features"** by many players. |
 | `CONSOLE` | `OFF`<br>(`ON` if `CMAKE_BUILD_TYPE` is `Debug`) | Show a console window (Windows only). |
 | `BUILD_STATIC` | `OFF` | Link statically to create a standalone executable (Windows with MinGW-based toolchains only). Use a vcpkg `-static` triplet for MSVC instead. |
@@ -351,11 +347,7 @@ Note that this code has been **heavily refactored**, **optimized** and **moderni
 
 ## Thanks
 
-- **[@Headshotnoby](https://www.github.com/headshot2017)**: For almost fully implementing the 64-bit support and the initial fixed-function OpenGL backend.
-- **[@Patoke](https://www.github.com/Patoke)**: For the incredible initial reimplementation of PvZ GOTY.
-- **[@rspforhp](https://www.github.com/octokatherine)**: For the 0.9.9 version's work.
-- **[@ruslan831](https://github.com/ruslan831)**: For archiving the 0.9.9 version's re-implementation.
 - **PopCap Games**: For creating the amazing game and releasing their framework to the public with a permissive license.
 - **The SDL Team**: For the amazing cross-platform development library that powers this port.
 - **The OpenMPT Team**: For libopenmpt, enabling high-quality MO3 music playback.
-- All the contributors who have worked or are actively working in this amazing project.
+- All the contributors who have worked or are actively working in this amazing project, especially [@Headshotnoby](https://www.github.com/headshot2017) and [@Patoke](https://www.github.com/Patoke) for their groundwork.

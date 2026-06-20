@@ -40,7 +40,6 @@ using namespace Sexy;
 static char gLogFileName[512];
 static char gDebugDataFolder[512];
 
-//0x514EA0
 void TodErrorMessageBox(const char* theMessage, const char* theTitle)
 {
 #ifdef __SWITCH__
@@ -135,7 +134,7 @@ void TodLog(const char* theFormat, ...)
 
 void TodLogString(const char* theMsg)
 {
-#ifdef _PVZ_DEBUG
+#ifdef PVZ_DEBUG
 	std::ofstream f(Sexy::PathFromU8(gLogFileName), std::ios::app | std::ios::binary);
 	if (!f)
 	{

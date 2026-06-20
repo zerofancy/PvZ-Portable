@@ -84,6 +84,7 @@ AchievementsWidget::~AchievementsWidget() {
 
 // GOTY @Patoke: 0x401A10
 void AchievementsWidget::Update() {
+	MarkDirty();
 	if (mScrollValue <= 0)
 		return;
 
@@ -205,7 +206,6 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 
 // GOTY @Patoke: 0x401890
 void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
-	(void)theClickCount;
 	Point aPos = Point(x, y);
 	if (aBackButtonRect.Contains(aPos)) {
 		mApp->mGameSelector->SlideTo(0, 0);
@@ -217,6 +217,8 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 		mScrollDirection = mDidPressMoreButton ? -1 : 1;
 		mScrollValue = 20;
 	}
+
+	(void)theClickCount;
 }
 
 // GOTY @Patoke: 0x4019A0

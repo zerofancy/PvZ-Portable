@@ -43,7 +43,6 @@ ToolTipWidget::ToolTipWidget()
 	mMaxLinesWidth = 0;
 }
 
-//0x51A530
 void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 {
 	int aLineWidth = 0;
@@ -83,6 +82,18 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 		{
 			aBreakDrawLen = aCharStart - aLineStart;
 			aBreakResumePos = aCharEnd;
+			if (aLineWidth >= mGetsLinesWidth)
+			{
+				theLines.push_back(mLabel.substr(aLineStart, aBreakDrawLen));
+				aCurPos = aBreakResumePos;
+				while (aCurPos < mLabel.size() && mLabel[aCurPos] == ' ')
+					aCurPos++;
+				aLineStart = aCurPos;
+				aLineWidth = 0;
+				aBreakDrawLen = -1;
+				aPrevChar = 0;
+				continue;
+			}
 		}
 		else if (Sexy::IsAutoBreakChar(aChar) &&
 			!Sexy::IsClosingPunctuation(aChar) &&
@@ -91,29 +102,18 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 		{
 			aBreakDrawLen = aCharStart - aLineStart;
 			aBreakResumePos = aCharStart;
-		}
-		aPrevChar = aChar;
-
-		if (aLineWidth >= mGetsLinesWidth)
-		{
-			if (aBreakDrawLen >= 0)
+			if (aLineWidth >= mGetsLinesWidth)
 			{
 				theLines.push_back(mLabel.substr(aLineStart, aBreakDrawLen));
 				aCurPos = aBreakResumePos;
-				while (aCurPos < mLabel.size() && mLabel[aCurPos] == ' ')
-					aCurPos++;
+				aLineStart = aCurPos;
+				aLineWidth = 0;
+				aBreakDrawLen = -1;
+				aPrevChar = 0;
+				continue;
 			}
-			else
-			{
-				size_t aDrawEnd = (aCharEnd > aLineStart) ? aCharEnd : aCharStart + 1;
-				theLines.push_back(mLabel.substr(aLineStart, aDrawEnd - aLineStart));
-				aCurPos = aDrawEnd;
-			}
-			aLineStart = aCurPos;
-			aLineWidth = 0;
-			aBreakDrawLen = -1;
-			aPrevChar = 0;
 		}
+		aPrevChar = aChar;
 	}
 
 	if (aLineStart < mLabel.size())
@@ -122,7 +122,6 @@ void ToolTipWidget::GetLines(std::vector<std::string>& theLines)
 	}
 }
 
-//0x51A710
 void ToolTipWidget::CalculateSize()
 {
 	std::vector<std::string> aLines;
@@ -157,28 +156,24 @@ void ToolTipWidget::CalculateSize()
 	mHeight = aHeight + aLines.size() * 2 - 2;
 }
 
-//0x51A8D0
 void ToolTipWidget::SetLabel(const std::string& theLabel)
 {
 	mLabel = TodStringTranslate(theLabel);
 	CalculateSize();
 }
 
-//0x51A950
 void ToolTipWidget::SetTitle(const std::string& theTitle)
 {
 	mTitle = TodStringTranslate(theTitle);
 	CalculateSize();
 }
 
-//0x51A9D0
 void ToolTipWidget::SetWarningText(const std::string& theWarningText)
 {
 	mWarningText = TodStringTranslate(theWarningText);
 	CalculateSize();
 }
 
-//0x51AA50
 void ToolTipWidget::Draw(Graphics* g)
 {
 	if (!mVisible)

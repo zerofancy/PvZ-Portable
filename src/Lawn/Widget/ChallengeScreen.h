@@ -42,18 +42,21 @@ private:
     };
 
 public:
-    NewLawnButton*              mBackButton;                                //+0x8C
-    ButtonWidget*               mPageButton[MAX_CHALLANGE_PAGES];           //+0x90
-    ButtonWidget*               mChallengeButtons[NUM_CHALLENGE_MODES];     //+0xA0
-    LawnApp*                    mApp;                                       //+0x1C0
-    ToolTipWidget*              mToolTip;                                   //+0x1C4
-    ChallengePage               mPageIndex;                                 //+0x1C8
-    bool                        mCheatEnableChallenges;                     //+0x1CC
-    UnlockingState              mUnlockState;                               //+0x1D0
-    int                         mUnlockStateCounter;                        //+0x1D4
-    int                         mUnlockChallengeIndex;                      //+0x1D8
-    float                       mLockShakeX;                                //+0x1DC
-    float                       mLockShakeY;                                //+0x1E0
+    NewLawnButton*              mBackButton;
+    ButtonWidget*               mPageButton[MAX_CHALLANGE_PAGES];
+    ButtonWidget*               mChallengeButtons[NUM_CHALLENGE_MODES];
+    LawnApp*                    mApp;
+    ToolTipWidget*              mToolTip;
+    ChallengePage               mPageIndex;
+    bool                        mCheatEnableChallenges;
+    UnlockingState              mUnlockState;
+    int                         mUnlockStateCounter;
+    int                         mUnlockChallengeIndex;
+    float                       mLockShakeX;
+    float                       mLockShakeY;
+    bool                        mLimboPageUnlocked;
+    int                         mClickCount;
+    uint32_t                    mLastClickTime;
 
 public:
     ChallengeScreen(LawnApp* theApp, ChallengePage thePage);
@@ -75,6 +78,7 @@ public:
     virtual void                ButtonMouseMove(int, int, int){}
     virtual void                ButtonDepress(int theId);
     void                        UpdateToolTip();
+    virtual void                MouseDown(int x, int y, int theClickCount);
 //  virtual void                KeyChar(char theChar);
 
     /*inline*/ bool             IsScaryPotterLevel(GameMode theGameMode);
